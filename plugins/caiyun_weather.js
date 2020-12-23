@@ -44,7 +44,7 @@ class Plugin extends Bot {
                 content += `**${a.title}**\n> <font color="comment">${a.description}</font>\n\n`;
             });
         }
-        await this.sendMarkdown(`
+        let text1 = `
 彩云天气 🌤 <font color="info">${addr || ''}</font>
 
 **降雨提醒：**
@@ -53,7 +53,9 @@ class Plugin extends Bot {
 **天气预报：**
 > <font color="info">${data.result.hourly.description.trim()}</font>
 
-${content}`);
+${content}`
+        console.log(text1)
+        await this.sendMarkdown(text1);
     }
 }
 
