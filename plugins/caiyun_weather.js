@@ -34,11 +34,11 @@ class Plugin extends Bot {
 
   async _sendData (data, addr = '') {
     // 预警信息
-    let alert_md = '';
+    let content = '';
     if (data.result.alert.content.length > 0) {
-      alert_md += '天气预警 ⚠\n';
+      content += '天气预警 ⚠\n';
       data.result.alert.content.map(a => {
-        alert_md += `**${a.title}**\n> <font color="comment">${a.description}</font>\n\n`;
+        content += `**${a.title}**\n> <font color="comment">${a.description}</font>\n\n`;
       });
     }
     await this.sendMarkdown(`
@@ -50,9 +50,8 @@ class Plugin extends Bot {
 **天气预报：**
 > <font color="info">${data.result.hourly.description.trim()}</font>
 
-${alert_md}`);
+${content}`);
   }
 }
-
 
 new Plugin().run()
