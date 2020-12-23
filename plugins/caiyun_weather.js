@@ -8,40 +8,43 @@ const axios = require('axios').default;
 const process = require('process');
 
 class Plugin extends Bot {
-  constructor () {
-    super();
-    const { caiyun_key, caiyun_gps } = process.env;
-    if (!caiyun_key || !caiyun_gps) {
-      console.error('! 请先配置secrets:caiyun_gps,caiyun_key');
-      return this.exit();
+    constructor() {
+        super();
+        const {caiyun_key, caiyun_gps} = process.env;
+        if (!caiyun_key || !caiyun_gps) {
+            console.error('! 请先配置secrets:caiyun_gps,caiyun_key');
+            return this.exit();
+        }
+        this.API_KEY = caiyun_key;
+        this.GPS = caiyun_gps;
     }
-    this.API_KEY = caiyun_key;
-    this.GPS = caiyun_gps;
-  }
 
-  async run () {
-    // 判断是否是多gps
-    const _gps = this.GPS.split('|');
-    _gps.map(async gps => {
-      const tmp = gps.split('@');
-      const api = `https://api.caiyunapp.com/v2.5/${this.API_KEY}/${tmp[0]}/weather.json?alert=true`;
-      await axios.get(api).then(async res => {
-        const { data } = res;
-        await this._sendData(data, tmp[1]);
-      })
-    });
-  }
+    async run() {
+        // 判断是否是多gps
+        const _gps = this.GPS.split('|');
+        _gps.map(async gps => {
+            const tmp = gps.split('@');
+            const api = `https://api.caiyunapp.com/v2.5/${this.API_KEY}/${tmp[0]}/weather.json?alert=true`;
+            await axios.get(api).then(async res => {
+                const {data} = res;
 
-  async _sendData (data, addr = '') {
-    // 预警信息
-    let content = '';
-    if (data.result.alert.content.length > 0) {
-      content += '天气预警 ⚠\n';
-      data.result.alert.content.map(a => {
-        content += `**${a.title}**\n> <font color="comment">${a.description}</font>\n\n`;
-      });
+                await this._sendData(data, tmp[1]);
+            })
+        });
     }
-    await this.sendMarkdown(`
+
+    async _sendData(data, addr = '') {
+        console.log(data)
+        console.log(addr)
+        // 预警信息
+        let content = '';
+        if (data.result.alert.content.length > 0) {
+            content += '天气预警 ⚠\n';
+            data.result.alert.content.map(a => {
+                content += `**${a.title}**\n> <font color="comment">${a.description}</font>\n\n`;
+            });
+        }
+        await this.sendMarkdown(`
 彩云天气 🌤 <font color="info">${addr || ''}</font>
 
 **降雨提醒：**
@@ -51,7 +54,7 @@ class Plugin extends Bot {
 > <font color="info">${data.result.hourly.description.trim()}</font>
 
 ${content}`);
-  }
+    }
 }
 
 new Plugin().run()
