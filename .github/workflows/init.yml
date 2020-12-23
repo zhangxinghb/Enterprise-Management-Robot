@@ -1,10 +1,12 @@
-name: 'GeekBot'
+name: '彩云天气'
 
 on:
   push:
   pull_request:
   watch:
     types: [started]
+  schedule:
+    - cron: '30 22 * * *'
 
 jobs:
   bot:
@@ -15,8 +17,8 @@ jobs:
         with:
           node-version: '12'
       - run: npm install
-      - run: npm start
+      - run: node ./plugins/caiyun_weather.js
         env:
           bot_api: ${{ secrets.bot_api }}
-          secrets_caiyun_key: ${{ secrets.caiyun_key }}
-          secrets_caiyun_gps: ${{ secrets.caiyun_gps }}
+          caiyun_key: ${{ secrets.caiyun_key }}
+          caiyun_gps: ${{ secrets.caiyun_gps }}
